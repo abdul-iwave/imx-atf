@@ -33,6 +33,9 @@ IMPORT_SYM(unsigned long, __RO_END__, BL31_RO_END);
 IMPORT_SYM(unsigned long, __RW_START__, BL31_RW_START);
 IMPORT_SYM(unsigned long, __RW_END__, BL31_RW_END);
 
+/* IWG37M: Support For IWG37M Board */
+#define CONFIG_IWG37M 
+
 #define CAAM_BASE       (0x30900000) /* HW address*/
 
 #define JR0_BASE        (CAAM_BASE + 0x1000)
@@ -244,8 +247,16 @@ void bl31_early_platform_setup2(u_register_t arg0, u_register_t arg1,
 
 	/* Assign M7 to domain 1 */
 	mmio_write_32(IMX_RDC_BASE + 0x204, 0x1);
+#ifdef CONFIG_IWG37M
+        /* IWG37M: UART4: Cortex A53 debug UART */
+        mmio_write_32(IMX_RDC_BASE + 0x518, 0xff);
+        /* IWG37M: UART3: Cortex M7 debug UART */
+        mmio_write_32(IMX_RDC_BASE + 0x5A0, 0xff);
+	mmio_write_32(IMX_RDC_BASE + 0x5A4, 0xff);
+#else
 	mmio_write_32(IMX_RDC_BASE + 0x518, 0xfc);
 	mmio_write_32(IMX_RDC_BASE + 0x5A4, 0xf3);
+#endif
 }
 
 void bl31_plat_arch_setup(void)
